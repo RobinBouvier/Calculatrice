@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    private TextView resultText;
-    private double firstValue = 0;
-    private String operator = "";
-    private boolean isNewOp = true;
+    // on crée les variables
+    private TextView texteResultat; //donne le texte du résultat
+    private double premiereValeur = 0; //valeur du premier nombre de l'opération
+    private String operateur = ""; //opérateur de calcul
+    private boolean isnewNombre = true; //savoir si c'est un nouveau nombre
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,18 +29,21 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        resultText = findViewById(R.id.resultat);
+        //variable du texte du résultat pour l'affichage
+        texteResultat = findViewById(R.id.resultat);
 
+        //on crée la manière dont les boutons de nombre vont être écouté
         View.OnClickListener numberListener = v -> {
-            Button b = (Button) v;
-            if (isNewOp) {
-                resultText.setText(b.getText());
-                isNewOp = false;
+            Button b = (Button) v; //on convertit v qui est une view en un type button
+            if (isnewNombre) { //si c'est un nouveau nombre
+                texteResultat.setText(b.getText()); //on écrit le texte dans le view
+                isnewNombre = false; //on change la variable en false pour permettre d'écrire des nombres à plusieurs chiffres
             } else {
-                resultText.append(b.getText().toString());
+                texteResultat.append(b.getText().toString()); //sinon on ajoute le chiffre appuyé à la fin du string qui s'affiche
             }
         };
 
+        //on met des onClickListener sur les boutons avec leurs IDs en utilisant numberListener
         findViewById(R.id.bouton_0).setOnClickListener(numberListener);
         findViewById(R.id.bouton_1).setOnClickListener(numberListener);
         findViewById(R.id.bouton_2).setOnClickListener(numberListener);
@@ -52,51 +55,56 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.bouton_8).setOnClickListener(numberListener);
         findViewById(R.id.bouton_9).setOnClickListener(numberListener);
 
-        findViewById(R.id.bouton_plus).setOnClickListener(v -> operatorPressed("+"));
-        findViewById(R.id.bouton_moins).setOnClickListener(v -> operatorPressed("-"));
-        findViewById(R.id.bouton_fois).setOnClickListener(v -> operatorPressed("*"));
+        //on met des onClickListener sur les boutons d'opérateurs avec leurs IDs en utilisant numberListener
+        findViewById(R.id.bouton_plus).setOnClickListener(v -> operateurPressed("+"));
+        findViewById(R.id.bouton_moins).setOnClickListener(v -> operateurPressed("-"));
+        findViewById(R.id.bouton_fois).setOnClickListener(v -> operateurPressed("*"));
 
+        //listerner pour le bouton égal donc on appelle la méthode qui calcule le résultat
         findViewById(R.id.bouton_egal).setOnClickListener(v -> calculateResult());
 
         findViewById(R.id.bouton_virgule).setOnClickListener(v -> {
-            if (!resultText.getText().toString().contains(".")) {
-                resultText.append(".");
+            if (!texteResultat.getText().toString().contains(".")) {
+                texteResultat.append(".");
             }
         });
     }
 
-    private void operatorPressed(String op) {
+    //méthode appelé quand un opérateur (+, -, *) est appuyé
+    private void operateurPressed(String op) {
         try {
-            firstValue = Double.parseDouble(resultText.getText().toString());
+            premiereValeur = Double.parseDouble(texteResultat.getText().toString()); //on récupère le premier nombre et on le transforme en string
         } catch (NumberFormatException e) {
-            resultText.setText(getString(R.string.error));
+            texteResultat.setText(getString(R.string.error)); //si problème de format, on met l'exception
         }
-        operator = op;
-        isNewOp = true;
+        operateur = op; //on change la variable opérateur
+        isnewNombre = true; //on remet la variable à vrai car on va écrire un nouveau nombre
     }
 
+    //méthode quand le bouton égal est pressé pour calculer le résultat
     private void calculateResult() {
-        double secondValue;
+        double deuxiemeValeur;
         try {
-            secondValue = Double.parseDouble(resultText.getText().toString());
+            deuxiemeValeur = Double.parseDouble(texteResultat.getText().toString()); //on transforme la deuxième valeur en string
         } catch (NumberFormatException e) {
-            resultText.setText(getString(R.string.error));
+            texteResultat.setText(getString(R.string.error));//sauf si exception comme dans operateurPressed
             return;
         }
 
         double result = 0;
-        switch (operator) {
+        //en fonction de l'opérateur on va faire une opération différente
+        switch (operateur) {
             case "+":
-                result = firstValue + secondValue;
+                result = premiereValeur + deuxiemeValeur;
                 break;
             case "-":
-                result = firstValue - secondValue;
+                result = premiereValeur - deuxiemeValeur;
                 break;
             case "*":
-                result = firstValue * secondValue;
+                result = premiereValeur * deuxiemeValeur;
                 break;
         }
-        resultText.setText(String.valueOf(result));
-        isNewOp = true;
+        texteResultat.setText(String.valueOf(result));//on change la variable du texteResultat pour afficher le résultat
+        isnewNombre = true;//on remet à true car on va écrire un nouveau nombre
     }
 }
